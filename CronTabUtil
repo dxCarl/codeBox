@@ -2,6 +2,7 @@ import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2018/3/28
  */
 public class CronTabUtil {
+    private static final String CRON_DATE_FORMAT = "ss mm HH dd MM ? yyyy";
 
     public static List<Date> genCurDateListFromCron(String cron){
         Date todayStart = getStartTime();
@@ -51,6 +53,15 @@ public class CronTabUtil {
         todayEnd.set(Calendar.SECOND, 59);
         todayEnd.set(Calendar.MILLISECOND, 999);
         return todayEnd.getTime();
+    }
+
+    public static String getCron(final Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat(CRON_DATE_FORMAT);
+        String formatTimeStr = "";
+        if (date != null) {
+            formatTimeStr = sdf.format(date);
+        }
+        return formatTimeStr;
     }
 
  }
