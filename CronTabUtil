@@ -1,0 +1,56 @@
+import org.quartz.TriggerUtils;
+import org.quartz.impl.triggers.CronTriggerImpl;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+/**
+ *
+ * @author dx
+ * @date 2018/3/28
+ */
+public class CronTabUtil {
+
+    public static List<Date> genCurDateListFromCron(String cron){
+        Date todayStart = getStartTime();
+        Date todayEnd = getEndTime();
+        return genDateListFromCron(cron, todayStart, todayEnd);
+    }
+
+    public static List<Date> genDateListFromCron(String cron, Date startTime, Date endTime){
+        List<Date> dates = new ArrayList<>();
+        try {
+            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+            cronTriggerImpl.setCronExpression(cron);
+            dates = TriggerUtils.computeFireTimesBetween(
+                    cronTriggerImpl, null, startTime,
+                    endTime);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return  dates;
+    }
+
+    public static Date getStartTime() {
+        Calendar todayStart = Calendar.getInstance();
+        todayStart.set(Calendar.HOUR_OF_DAY, 0);
+        todayStart.set(Calendar.MINUTE, 0);
+        todayStart.set(Calendar.SECOND, 0);
+        todayStart.set(Calendar.MILLISECOND, 0);
+        return todayStart.getTime();
+    }
+
+    public static Date getEndTime() {
+        Calendar todayEnd = Calendar.getInstance();
+        todayEnd.set(Calendar.HOUR_OF_DAY, 23);
+        todayEnd.set(Calendar.MINUTE, 59);
+        todayEnd.set(Calendar.SECOND, 59);
+        todayEnd.set(Calendar.MILLISECOND, 999);
+        return todayEnd.getTime();
+    }
+
+ }
