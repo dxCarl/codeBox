@@ -1,0 +1,139 @@
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSONObject;
+import org.apache.http.*;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+/**
+ * Created by dx on 2018/4/3.
+ */
+public class HttpRequestUtil {
+    
+    public JSONObject httpGet(String url)
+            throws HttpException, IOException {
+        String json;
+        JSONObject jsonObject;
+        HttpGet httpGet = new HttpGet();
+
+        // 设置参数
+        try {
+            httpGet.setURI(new URI(url));
+        } catch (URISyntaxException e) {
+            throw new HttpException("请求url格式错误。" + e.getMessage());
+
+        }
+        // 发送请求
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpResponse httpResponse = client.execute(httpGet);
+        // 获取返回的数据
+        HttpEntity entity = httpResponse.getEntity();
+        byte[] body = EntityUtils.toByteArray(entity);
+        StatusLine sL = httpResponse.getStatusLine();
+        int statusCode = sL.getStatusCode();
+        if (statusCode == 200) {
+            json = new String(body);
+            entity.consumeContent();
+        } else {
+            throw new HttpException("statusCode=" + statusCode);
+        }
+        if (null != json) {
+            jsonObject = JSONObject.parseObject(json);
+            return jsonObject;
+        } else {
+            return null;
+        }
+    }
+
+    public static String sendGet(String url) {
+        //1.获得一个httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        //2.生成一个get请求
+        HttpGet httpget = new HttpGet(url);
+        CloseableHttpResponse response = null;
+        try {
+            //3.执行get请求并返回结果
+            response = httpclient.execute(httpget);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        String result = null;
+        try {
+            //4.处理结果，这里将结果返回为字符串
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                result = EntityUtils.toString(entity);
+            }
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static String sendPost(String url) {
+        //1.获得一个httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        //2.生成一个post请求
+        HttpPost httppost = new HttpPost(url);
+        CloseableHttpResponse response = null;
+        try {
+            //3.执行get请求并返回结果
+            response = httpclient.execute(httppost);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //4.处理结果，这里将结果返回为字符串
+        HttpEntity entity = response.getEntity();
+        String result = null;
+        try {
+            result = EntityUtils.toString(entity);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static String sendPost(String url, Map<String, String> map) {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        List<NameValuePair> formParams = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            //给参数赋值
+            formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+        HttpPost httppost = new HttpPost(url);
+        httppost.setEntity(entity);
+        CloseableHttpResponse response = null;
+        try {
+            response = httpclient.execute(httppost);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        HttpEntity entity1 = response.getEntity();
+        String result = null;
+        try {
+            result = EntityUtils.toString(entity1);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+}
