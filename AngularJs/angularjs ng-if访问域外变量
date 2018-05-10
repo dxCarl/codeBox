@@ -1,0 +1,68 @@
+angularJs 访问域外变量
+
+  ng-if="x.owner == $parent.userName || $parent.authType == 'A'"
+
+// 实际代码
+<#macro fram_content>
+<div class="frame_content_container" ng-app="app" ng-controller="mailInfoByOwner"  ng-init="userName='xiao.deng'">
+    <div class="frame_content_header">
+        <ul style="display: inline">
+            <li><p>邮件任务</p></li>
+            <li><a class="frame_content_container_active" href="/view/frame/mail/total">全部</a></li>
+            <li><a class="frame_content_container_inactive" href="/view/frame/mail/fav">我的收藏</a></li>
+            <li><a class="frame_content_container_inactive" href="/view/frame/mail/create">我的创建</a></li>
+            <li>
+                <img src="/assets/icon/search.png" ng-click="searchByMailName()">
+            </li>
+            <li>
+                <input class="search_box" ng-model="mailName">
+            </li>
+        </ul>
+    </div>
+    <div class="frame_content_tools_bar" >
+        <button class="type_1" ng-controller="mailCommon" ng-click="createNewMailTask()">新建邮件</button>
+    </div>
+    <div class="frame_content_table">
+        <table>
+            <tr>
+                <th class="first_column_padding">名称</th>
+                <th>运行状态</th>
+                <th>创建人</th>
+                <th>发送周期</th>
+                <th>上次执行时间</th>
+                <th style="width: 80px"></th>
+                <th>操作</th>
+            </tr>
+            <tr class="color_change"  ng-repeat="x in tableData">
+                <td class="first_column_padding">
+                    <img class="mail" src="/assets/icon/mail_active.png">
+                    <img ng-if="x.fav" class="star" src="/assets/icon/star_active.png">
+                    <img ng-if="!x.fav" class="star" src="/assets/icon/star.png">
+                    {{x.name}}</td>
+                <td>{{x.statusCN}}</td>
+                <td>{{x.owner}}</td>
+                <td>每日</td>
+                <td class="time_font">{{x.lastExeTime}}</p></td>
+                <td ng-controller="mailCommon">
+                    <img src="/assets/icon/edit_note_gray.png"
+                         class="icon_edit"
+                         ng-model="x.selected"
+                         ng-click="editMailTask(x)"
+                         ng-if="x.owner == $parent.userName || $parent.authType == 'A'"
+                    >
+                    <img src="/assets/icon/copy.png" class="icon_copy" ng-model="x.selected" ng-click="copyMailTask(x)">
+                </td>
+                <td ng-controller="mailCommon" class="dropdown_operate" ng-model="x.selected">
+                    <img src="/assets/icon/operation_dot.png" class="operation_dot" >
+                    <div class="dropdown-content" ng-controller="mailCommon" >
+                        <p ng-click="renameMailTask(x)">重命名</p>
+                        <p ng-click="startMailTask(x)" ng-show="!x.status">启用</p>
+                        <p ng-click="stopMailTask(x)" ng-show="x.status">停用</p>
+                        <p ng-click="deleteMailTask(x)" style="color: #FF2D47;">删除</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</#macro>
