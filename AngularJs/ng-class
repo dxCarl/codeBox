@@ -1,0 +1,4 @@
+ ng-class 动态样式
+ inactive_font 及 active_font 为样式，
+ $parent.selectedItemId != x.id 及$parent.selectedItemId == x.id 为判断表达式，当表达式为真时，对应的样式生效
+ ng-class="{inactive_font: $parent.selectedItemId != x.id, active_font: $parent.selectedItemId == x.id}"
